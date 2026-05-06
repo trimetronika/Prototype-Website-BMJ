@@ -15,6 +15,13 @@
     @apply font-sans text-slate-900 bg-white;
     scroll-behavior: smooth;
   }
+
+  /* Ensure visible focus rings for keyboard navigation */
+  :focus-visible {
+    outline: 3px solid #E31E24;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 .bg-hero-pattern {
