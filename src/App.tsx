@@ -11,7 +11,8 @@ import {
   Menu, 
   X,
   ArrowRight,
-  ExternalLink
+  ExternalLink,
+  ChevronUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
@@ -19,10 +20,13 @@ import { useState, useEffect } from 'react';
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const y = window.scrollY;
+      setScrolled(y > 20);
+      setShowScrollTop(y > 400);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -75,13 +79,15 @@ export default function App() {
   const Logo = ({ className = "" }: { className?: string }) => (
     <div className={`relative inline-flex items-center justify-center ${className}`}>
       <img 
-        src="/bmj_logo.png" 
-        alt="PT Bina Mitra Jaya Logo" 
+        src="/bmj_logo.svg" 
+        alt="Logo PT Bina Mitra Jaya" 
         className="h-10 md:h-14 w-auto"
+        width={280}
+        height={80}
         onError={(e) => {
-          // If bmj_logo.png is not found, try logo.png as a common alternative
-          if (e.currentTarget.src.includes('bmj_logo.png')) {
-            e.currentTarget.src = '/logo.png';
+          // Fall back to PNG if SVG is not supported
+          if (e.currentTarget.src.includes('bmj_logo.svg')) {
+            e.currentTarget.src = '/bmj_logo.png';
           }
         }}
       />
@@ -92,6 +98,7 @@ export default function App() {
     <div className="min-h-screen flex flex-col font-sans">
       {/* Navigation */}
       <header 
+        role="banner"
         className={`fixed w-full z-50 transition-all duration-300 ${
           scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
         }`}
@@ -106,7 +113,7 @@ export default function App() {
           </div>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8" aria-label="Menu utama">
             {navItems.map((item) => (
               <a 
                 key={item.name} 
@@ -122,6 +129,7 @@ export default function App() {
               href={waLink}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="Konsultasi via WhatsApp – buka di tab baru"
               className="bg-bmj-red text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-red-500/20 flex items-center gap-2"
             >
               Konsultasi via WA
@@ -132,11 +140,14 @@ export default function App() {
           <button 
             className="md:hidden p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label={isMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-menu"
           >
             {isMenuOpen ? (
-              <X className={scrolled ? 'text-bmj-blue' : 'text-white'} />
+              <X className={scrolled ? 'text-bmj-blue' : 'text-white'} aria-hidden="true" />
             ) : (
-              <Menu className={scrolled ? 'text-bmj-blue' : 'text-white'} />
+              <Menu className={scrolled ? 'text-bmj-blue' : 'text-white'} aria-hidden="true" />
             )}
           </button>
         </div>
@@ -145,6 +156,9 @@ export default function App() {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
+              id="mobile-menu"
+              role="navigation"
+              aria-label="Menu navigasi mobile"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -165,6 +179,7 @@ export default function App() {
                   href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Konsultasi via WhatsApp – buka di tab baru"
                   className="bg-bmj-red text-white p-4 rounded-xl text-center font-bold"
                 >
                   Konsultasi via WA
@@ -174,6 +189,9 @@ export default function App() {
           )}
         </AnimatePresence>
       </header>
+
+      {/* Main Content */}
+      <main id="main-content">
 
       {/* Hero Section */}
       <section id="home" className="relative min-h-screen flex items-center pt-20 bg-hero-pattern overflow-hidden">
@@ -187,10 +205,10 @@ export default function App() {
               <span className="inline-block py-1 px-4 rounded-full bg-bmj-red/20 text-bmj-red text-xs font-bold tracking-widest uppercase mb-4 backdrop-blur-sm border border-bmj-red/30">
                 Penyedia Jasa Alih Daya Terunggul
               </span>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight mb-6">
                 Solusi Tenaga Kerja Profesional, <span className="text-bmj-red">Terpercaya</span>, & Berintegritas
               </h1>
-              <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl">
+              <p className="text-lg md:text-xl lg:text-2xl text-slate-300 mb-10 leading-relaxed max-w-2xl">
                 PT. BINA MITRA JAYA hadir membantu lembaga dan perusahaan Anda dengan layanan alih daya (outsourcing) berkualitas: Security, Cleaning Service, Driver, dan Karyawan Produksi. Bersama BMJ Pasti Jaya.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -198,9 +216,10 @@ export default function App() {
                   href={waLink}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Hubungi kami via WhatsApp – buka di tab baru"
                   className="bg-bmj-red text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-red-700 transition-all shadow-2xl hover:shadow-red-500/40 flex items-center justify-center gap-3 group"
                 >
-                  <Phone className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                  <Phone className="w-5 h-5 group-hover:rotate-12 transition-transform" aria-hidden="true" />
                   Hubungi Kami via WhatsApp
                 </a>
                 <a 
@@ -215,8 +234,8 @@ export default function App() {
         </div>
         
         {/* Decorative elements */}
-        <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-bmj-red/10 blur-[120px] rounded-full"></div>
-        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-blue-500/10 blur-[100px] rounded-full"></div>
+        <div className="absolute bottom-0 right-0 w-1/3 h-1/3 bg-bmj-red/10 blur-[120px] rounded-full" aria-hidden="true"></div>
+        <div className="absolute top-1/4 -left-20 w-80 h-80 bg-blue-500/10 blur-[100px] rounded-full" aria-hidden="true"></div>
       </section>
 
       {/* Stats / Badges Section */}
@@ -251,8 +270,9 @@ export default function App() {
               <div className="relative">
                 <img 
                   src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" 
-                  alt="Tentang PT Bina Mitra Jaya" 
+                  alt="Tim profesional PT Bina Mitra Jaya" 
                   className="rounded-3xl shadow-2xl relative z-10 border-8 border-white"
+                  loading="lazy"
                 />
                 <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-bmj-red rounded-3xl -z-0"></div>
                 <div className="absolute -top-6 -left-6 w-24 h-24 bg-bmj-blue rounded-full -z-0"></div>
@@ -330,9 +350,12 @@ export default function App() {
                 </p>
                 <a 
                   href={waLink} 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Info selengkapnya tentang ${service.title} via WhatsApp`}
                   className="text-bmj-red text-sm font-bold flex items-center gap-1 group-hover:gap-2 transition-all"
                 >
-                  Info Selengkapnya <ArrowRight className="w-4 h-4" />
+                  Info Selengkapnya <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </a>
               </motion.div>
             ))}
@@ -352,6 +375,7 @@ export default function App() {
                 href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Dapatkan penawaran harga spesial via WhatsApp – buka di tab baru"
                 className="bg-bmj-red text-white px-8 py-4 rounded-full font-bold hover:bg-red-700 transition-all flex items-center justify-center gap-3 shadow-xl shadow-red-900/40"
               >
                 Dapatkan Penawaran Harga Spesial
@@ -367,10 +391,11 @@ export default function App() {
           <div className="bg-bmj-blue rounded-[3rem] overflow-hidden shadow-2xl flex flex-col lg:flex-row">
             <div className="lg:w-1/2 relative overflow-hidden min-h-[400px]">
               <img 
-                src="https://images.unsplash.com/photo-1544650030-3c9baf648ce7?q=80&w=2070&auto=format&fit=crop" 
-                alt="Diklat Satpam" 
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+                  src="https://images.unsplash.com/photo-1544650030-3c9baf648ce7?q=80&w=2070&auto=format&fit=crop" 
+                  alt="Peserta Diklat Satpam Gada Pratama" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading="lazy"
+                />
               <div className="absolute inset-0 bg-gradient-to-t from-bmj-blue/80 to-transparent"></div>
               <div className="absolute bottom-8 left-8 right-8">
                 <div className="inline-flex items-center gap-2 bg-bmj-red px-4 py-2 rounded-lg text-white text-xs font-bold uppercase tracking-widest mb-4">
@@ -430,10 +455,11 @@ export default function App() {
                 href="https://forms.gle/placeholder"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Isi Formulir Pendaftaran – buka di tab baru"
                 className="inline-flex items-center gap-2 border-2 border-bmj-blue text-bmj-blue px-6 py-3 rounded-full font-bold hover:bg-bmj-blue hover:text-white transition-all group"
               >
                 Isi Formulir Pendaftaran
-                <ExternalLink className="w-4 h-4 group-hover:scale-110" />
+                <ExternalLink className="w-4 h-4 group-hover:scale-110" aria-hidden="true" />
               </a>
             </div>
             <div className="w-full md:w-1/3">
@@ -452,8 +478,10 @@ export default function App() {
         </div>
       </section>
 
+      </main>
+
       {/* Footer */}
-      <footer id="kontak" className="bg-bmj-blue text-white pt-20 pb-10">
+      <footer id="kontak" role="contentinfo" className="bg-bmj-blue text-white pt-20 pb-10">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             <div className="col-span-1 lg:col-span-1">
@@ -468,30 +496,46 @@ export default function App() {
                 Penyedia jasa alih daya (outsourcing) profesional dan terpercaya sejak 2016, berlokasi di Ambarawa, Kabupaten Semarang.
               </p>
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-bmj-red transition-colors cursor-pointer">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-bmj-red transition-colors cursor-pointer">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-bmj-red transition-colors cursor-pointer text-bmj-red hover:text-white">
-                  <span className="font-extrabold text-lg">M</span>
-                </div>
+                <a 
+                  href={`tel:+6289659706408`}
+                  aria-label="Hubungi kami via telepon"
+                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-bmj-red transition-colors"
+                >
+                  <Phone className="w-5 h-5" aria-hidden="true" />
+                </a>
+                <a 
+                  href="mailto:ptbina.mitrajaya@gmail.com"
+                  aria-label="Kirim email ke PT Bina Mitra Jaya"
+                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-bmj-red transition-colors"
+                >
+                  <Mail className="w-5 h-5" aria-hidden="true" />
+                </a>
+                <a 
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Chat via WhatsApp – buka di tab baru"
+                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-bmj-red transition-colors text-bmj-red hover:text-white"
+                >
+                  <span className="font-extrabold text-lg" aria-hidden="true">M</span>
+                </a>
               </div>
             </div>
 
             <div>
               <h4 className="text-xl font-bold mb-8 border-b border-white/10 pb-4">Tautan</h4>
+              <nav aria-label="Tautan navigasi footer">
               <ul className="space-y-4">
                 {navItems.map((item) => (
                   <li key={item.name}>
                     <a href={item.href} className="text-slate-400 hover:text-bmj-red transition-colors flex items-center gap-2 group">
-                      <div className="w-1.5 h-1.5 bg-bmj-red rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <div className="w-1.5 h-1.5 bg-bmj-red rounded-full opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true"></div>
                       {item.name}
                     </a>
                   </li>
                 ))}
               </ul>
+              </nav>
             </div>
 
             <div>
@@ -509,28 +553,28 @@ export default function App() {
               <h4 className="text-xl font-bold mb-8 border-b border-white/10 pb-4">Hubungi Kami</h4>
               <div className="space-y-6">
                 <div className="flex gap-4">
-                  <div className="bg-white/5 p-3 rounded-xl flex-shrink-0 h-fit">
+                  <div className="bg-white/5 p-3 rounded-xl flex-shrink-0 h-fit" aria-hidden="true">
                     <MapPin className="text-bmj-red w-5 h-5" />
                   </div>
-                  <p className="text-slate-400 text-sm leading-relaxed">
+                  <address className="text-slate-400 text-sm leading-relaxed not-italic">
                     Gg. Asoka Kupang Pete, RT.06/RW.02 Kec. Ambarawa, Kab. Semarang, Jawa Tengah, Kode Pos 50612.
-                  </p>
+                  </address>
                 </div>
                 <div className="flex gap-4">
-                  <div className="bg-white/5 p-3 rounded-xl flex-shrink-0">
+                  <div className="bg-white/5 p-3 rounded-xl flex-shrink-0" aria-hidden="true">
                     <Phone className="text-bmj-red w-5 h-5" />
                   </div>
-                  <p className="text-slate-400 text-sm">
+                  <a href="tel:+6289659706408" className="text-slate-400 hover:text-white text-sm transition-colors">
                     0896-5970-6408
-                  </p>
+                  </a>
                 </div>
                 <div className="flex gap-4">
-                  <div className="bg-white/5 p-3 rounded-xl flex-shrink-0">
+                  <div className="bg-white/5 p-3 rounded-xl flex-shrink-0" aria-hidden="true">
                     <Mail className="text-bmj-red w-5 h-5" />
                   </div>
-                  <p className="text-slate-400 text-sm">
+                  <a href="mailto:ptbina.mitrajaya@gmail.com" className="text-slate-400 hover:text-white text-sm transition-colors">
                     ptbina.mitrajaya@gmail.com
-                  </p>
+                  </a>
                 </div>
               </div>
             </div>
@@ -547,6 +591,22 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Scroll to Top Button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Kembali ke atas halaman"
+            className="fixed bottom-6 right-6 z-50 bg-bmj-red text-white w-12 h-12 rounded-full shadow-lg hover:bg-red-700 transition-all flex items-center justify-center focus:ring-2 focus:ring-bmj-red focus:ring-offset-2"
+          >
+            <ChevronUp className="w-6 h-6" aria-hidden="true" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

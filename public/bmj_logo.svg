@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80">
+  <!-- Shield Badge -->
+  <g transform="translate(4, 4)">
+    <!-- Outer shield -->
+    <path d="M36 0 L72 10 L72 40 Q72 65 36 74 Q0 65 0 40 L0 10 Z" fill="#0A1D37"/>
+    <!-- Red inner band -->
+    <path d="M36 6 L66 14 L66 40 Q66 61 36 69 Q6 61 6 40 L6 14 Z" fill="#E31E24"/>
+    <!-- White inner -->
+    <path d="M36 12 L60 19 L60 40 Q60 57 36 64 Q12 57 12 40 L12 19 Z" fill="white"/>
+    <!-- Blue center -->
+    <path d="M36 18 L54 24 L54 40 Q54 53 36 59 Q18 53 18 40 L18 24 Z" fill="#0A1D37"/>
+    <!-- BMJ Text in shield -->
+    <text x="36" y="46" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#E31E24" letter-spacing="-1">BMJ</text>
+  </g>
+  
+  <!-- Company Name -->
+  <g transform="translate(88, 0)">
+    <text x="0" y="26" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#0A1D37" letter-spacing="1">PT. BINA MITRA JAYA</text>
+    <text x="0" y="42" font-family="Arial, sans-serif" font-size="8.5" font-weight="700" fill="#E31E24" letter-spacing="3">BERSAMA BMJ PASTI JAYA</text>
+    <rect x="0" y="50" width="180" height="2" fill="#E31E24"/>
+    <text x="0" y="65" font-family="Arial, sans-serif" font-size="10" font-weight="400" fill="#0A1D37" letter-spacing="0.5">Outsourcing &amp; Security Professional</text>
+  </g>
+</svg>
